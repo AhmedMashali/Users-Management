@@ -7,6 +7,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -14,10 +15,13 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
   const configService = app.get(ConfigService);
   const corsConfig = getCorsConfig(configService);
   app.enableCors(corsConfig);
   app.use(helmet());
-  await app.listen(3000);
+
+  const port = configService.get<number>('PORT') || 3000;
+  await app.listen(port);
 }
 bootstrap();
